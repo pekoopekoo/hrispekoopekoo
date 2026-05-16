@@ -1,9 +1,0 @@
-{
-  "name": "talentacore-hris",
-  "version": "1.0.0",
-  "private": true,
-  "scripts": {
-    "start": "vercel dev",
-    "build": "echo \"Static HRIS app ready\""
-  }
-}
