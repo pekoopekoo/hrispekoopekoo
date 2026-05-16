@@ -4,6 +4,6 @@
   "private": true,
   "scripts": {
     "start": "vercel dev",
-    "build": "echo \"Static HRIS app ready\""
+    "build": "mkdir -p dist && cp index.html styles.css app.js dist/"
   }
 }
