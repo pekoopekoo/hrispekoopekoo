@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TalentaCore HRIS</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navigasi utama">
+        <div class="brand">
+          <div class="brand-mark">TC</div>
+          <div>
+            <strong>TalentaCore</strong>
+            <span>HRIS Workspace</span>
+          </div>
+        </div>
+
+        <nav class="nav-list">
+          <button class="nav-item active" data-view="dashboard"><span>⌂</span>Dashboard</button>
+          <button class="nav-item" data-view="employees"><span>◫</span>Karyawan</button>
+          <button class="nav-item" data-view="attendance"><span>◷</span>Absensi</button>
+          <button class="nav-item" data-view="leave"><span>✓</span>Cuti</button>
+          <button class="nav-item" data-view="payroll"><span>∑</span>Payroll</button>
+          <button class="nav-item" data-view="recruitment"><span>＋</span>Rekrutmen</button>
+        </nav>
+
+        <div class="sidebar-card">
+          <span class="label">Periode aktif</span>
+          <strong>Mei 2026</strong>
+          <p>Sinkronisasi absensi terakhir 08:45 WIB.</p>
+          <div class="db-status" id="dbStatus">Menghubungkan database...</div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Operasional SDM</p>
+            <h1 id="pageTitle">Dashboard</h1>
+          </div>
+          <div class="top-actions">
+            <label class="search">
+              <span>⌕</span>
+              <input id="globalSearch" type="search" placeholder="Cari karyawan, divisi, posisi" />
+            </label>
+            <button class="icon-button" id="themeToggle" title="Ganti tema" aria-label="Ganti tema">◐</button>
+            <button class="primary-button" id="addEmployeeBtn">Tambah Karyawan</button>
+          </div>
+        </header>
+
+        <section class="view active" id="dashboard">
+          <div class="metrics-grid">
+            <article class="metric">
+              <span>Total Karyawan</span>
+              <strong id="metricEmployees">0</strong>
+              <small>+4 bulan ini</small>
+            </article>
+            <article class="metric">
+              <span>Hadir Hari Ini</span>
+              <strong id="metricPresent">0</strong>
+              <small>Target 96%</small>
+            </article>
+            <article class="metric">
+              <span>Pengajuan Cuti</span>
+              <strong id="metricLeave">0</strong>
+              <small>Menunggu approval</small>
+            </article>
+            <article class="metric">
+              <span>Payroll Bersih</span>
+              <strong id="metricPayroll">Rp0</strong>
+              <small>Estimasi bulan ini</small>
+            </article>
+          </div>
+
+          <div class="content-grid">
+            <section class="panel wide-panel">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">Komposisi</p>
+                  <h2>Headcount per Divisi</h2>
+                </div>
+                <select id="divisionFilter">
+                  <option value="all">Semua divisi</option>
+                </select>
+              </div>
+              <div class="bar-chart" id="divisionChart"></div>
+            </section>
+
+            <section class="panel">
+              <div class="section-head">
+                <div>
+                  <p class="eyebrow">Prioritas</p>
+                  <h2>Task HR</h2>
+                </div>
+              </div>
+              <div class="task-list" id="taskList"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="employees">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Master Data</p>
+              <h2>Direktori Karyawan</h2>
+            </div>
+            <div class="segmented" role="tablist" aria-label="Filter status">
+              <button class="segment active" data-status="all">Semua</button>
+              <button class="segment" data-status="Tetap">Tetap</button>
+              <button class="segment" data-status="Kontrak">Kontrak</button>
+            </div>
+          </div>
+          <div class="employee-grid" id="employeeGrid"></div>
+        </section>
+
+        <section class="view" id="attendance">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Hari Ini</p>
+              <h2>Absensi Karyawan</h2>
+            </div>
+            <button class="secondary-button" id="markAllPresent">Tandai Semua Hadir</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Divisi</th>
+                  <th>Check-in</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="leave">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Approval</p>
+              <h2>Pengajuan Cuti</h2>
+            </div>
+            <button class="secondary-button" id="newLeaveBtn">Buat Pengajuan</button>
+          </div>
+          <div class="request-list" id="leaveList"></div>
+        </section>
+
+        <section class="view" id="payroll">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Kompensasi</p>
+              <h2>Simulasi Payroll</h2>
+            </div>
+            <button class="primary-button" id="runPayroll">Hitung Payroll</button>
+          </div>
+          <div class="payroll-summary">
+            <div>
+              <span>Gaji Kotor</span>
+              <strong id="grossPay">Rp0</strong>
+            </div>
+            <div>
+              <span>Potongan</span>
+              <strong id="deductionPay">Rp0</strong>
+            </div>
+            <div>
+              <span>Take Home Pay</span>
+              <strong id="netPay">Rp0</strong>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Karyawan</th>
+                  <th>Gaji Pokok</th>
+                  <th>Tunjangan</th>
+                  <th>Potongan</th>
+                  <th>Bersih</th>
+                </tr>
+              </thead>
+              <tbody id="payrollTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="recruitment">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Hiring Pipeline</p>
+              <h2>Rekrutmen</h2>
+            </div>
+            <button class="secondary-button" id="addCandidate">Tambah Kandidat</button>
+          </div>
+          <div class="kanban" id="pipeline"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="employeeDialog">
+      <form method="dialog" id="employeeForm">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Data Baru</p>
+            <h2>Tambah Karyawan</h2>
+          </div>
+          <button class="icon-button" value="cancel" aria-label="Tutup">×</button>
+        </div>
+        <label>Nama lengkap<input name="name" required placeholder="Nama karyawan" /></label>
+        <label>Posisi<input name="role" required placeholder="Contoh: HR Business Partner" /></label>
+        <label>Divisi<input name="division" required placeholder="Contoh: People Ops" /></label>
+        <label>Gaji pokok<input name="salary" type="number" min="1000000" step="500000" required placeholder="9000000" /></label>
+        <div class="form-row">
+          <label>Status
+            <select name="status">
+              <option>Tetap</option>
+              <option>Kontrak</option>
+            </select>
+          </label>
+          <label>Lokasi
+            <select name="location">
+              <option>Jakarta</option>
+              <option>Bandung</option>
+              <option>Remote</option>
+            </select>
+          </label>
+        </div>
+        <button class="primary-button" type="submit">Simpan Karyawan</button>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
